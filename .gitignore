@@ -13,3 +13,10 @@ __pycache__/
 dist/
 *.zip
 __MACOSX/
+
+# Promo video build
+marketplace/video/node_modules/
+marketplace/video/out/
+*.mp4
+*.wav
+*.mp3

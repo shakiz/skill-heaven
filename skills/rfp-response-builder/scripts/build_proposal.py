@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Build the proposal .docx from response.json.
+"""Build the proposal .docx from response.md.
 
-  build_proposal.py response.json -o proposal.docx [--template house.docx] [--company "Name"] [--no-requirements]
+  build_proposal.py response.md -o proposal.docx [--template house.docx] [--company "Name"] [--no-requirements]
 
 Layout: cover page -> narrative sections (in order) -> "Response to requirements" in RFP order,
 grouped by section. [VERIFY ...] placeholders are highlighted yellow so reviewers find them.
@@ -21,7 +21,7 @@ try:
     from docx.enum.text import WD_BREAK, WD_COLOR_INDEX
     from docx.shared import Pt, RGBColor
 except ImportError:
-    sys.exit("python-docx is required: pip install python-docx")
+    sys.exit("python-docx is required: python3 -m pip install python-docx")
 
 INLINE_RE = re.compile(r"(\*\*[^*]+\*\*|\*[^*]+\*|" + PLACEHOLDER_RE.pattern + r")", re.IGNORECASE)
 

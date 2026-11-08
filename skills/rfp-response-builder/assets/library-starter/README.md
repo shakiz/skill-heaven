@@ -3,7 +3,7 @@
 This is where the company's approved proposal content lives. The skill only states facts it finds here,
 so the quality of every proposal depends on this folder.
 
-Format: see `../references/library-format.md`. Each `.md` file holds entries like:
+Format: see `references/library-format.md` in the skill. Each `.md` file holds entries like:
 
 ```markdown
 ## ANS-SEC-001: Encryption of data at rest and in transit

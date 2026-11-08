@@ -1,0 +1,12 @@
+schema_version: "1.1"
+name: library-setup-from-past-proposals
+expected_outcome: |
+  A new answer library in ./rfp-library/ (in the user's folder, not inside the skill) with entries in the
+  documented format (## ID: Title, tags, last_reviewed, owner, approved_for). Facts use the newest source
+  where the proposals conflict: 140 employees not 120, ISO 27001 certified (not "preparing"), 2026 rates,
+  P1 1 hour / 08-17 hours. Generic answers have client names removed. The internal discount and
+  risk-buffer note is internal-only or excluded. last_reviewed reflects source dates. The user gets a
+  summary of entries, conflicts resolved, and a coverage report of missing topics (e.g. insurance, GDPR,
+  backup/DR, pen testing).
+context:
+  scaffold_script: place-files.sh

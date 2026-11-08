@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Build the compliance matrix .xlsx from response.json.
+"""Build the compliance matrix .xlsx from response.md.
 
-  build_matrix.py response.json -o compliance-matrix.xlsx
+  build_matrix.py response.md -o compliance-matrix.xlsx
 
 Sheets: Summary, Compliance matrix (every requirement), Gaps (what experts must supply).
 Requires openpyxl.
@@ -20,7 +20,7 @@ try:
     from openpyxl.styles import Alignment, Font, PatternFill
     from openpyxl.utils import get_column_letter
 except ImportError:
-    sys.exit("openpyxl is required: pip install openpyxl")
+    sys.exit("openpyxl is required: python3 -m pip install openpyxl")
 
 FILL = {
     "answered": "C6EFCE", "partial": "FFEB9C", "gap": "FFC7CE", "not-applicable": "EDEDED",

@@ -2,10 +2,12 @@
 
 The library is a folder of markdown files. Each file holds many **entries**. An entry is the smallest reusable, approved piece of content: one answer, one case study, one CV, or one pricing rule.
 
+The library belongs to the user and lives in their own working folder, by default `./rfp-library/`. It never lives inside the skill folder. `scripts/init_library.py ./rfp-library` creates the structure below.
+
 ## Folder layout (recommended)
 
 ```
-library/
+rfp-library/
 ├── company/        # profile, history, size, locations, financials, certifications, policies
 ├── answers/        # reusable Q&A grouped by topic: security.md, delivery.md, quality.md, support.md, hr.md …
 ├── case-studies/   # one entry per project reference
@@ -38,10 +40,11 @@ All customer data is encrypted at rest with AES-256 … (the approved answer tex
 - Treat an entry past `expires`, or with `last_reviewed` older than 12 months, as needing confirmation. The answer gets `[VERIFY]` and the gap list names the entry's owner.
 - Case studies should state: client (or an anonymized description, if the client may not be named), industry, problem, solution, results with numbers, period, technologies, and whether the client agreed to be a reference.
 
-## Harvesting new entries
+## Adding entries (Setup and Harvest modes)
 
-When adding content from a finished proposal:
-1. Generalize it: remove the client's name and specifics unless it is a case study.
-2. Give it the next free ID in its prefix series. Check with `search_library.py --list`.
-3. Set `last_reviewed` to today and `owner` to the role who approved it.
-4. Show the user the proposed entries and write them only after approval.
+1. Generalize the text: remove the client's name and specifics, unless it is a case study.
+2. Give it the next free ID: `search_library.py --library ./rfp-library --next-id ANS-SEC`.
+3. Set `last_reviewed` to the date of the source document. Content is only as current as its source. Set `owner` to the role that should keep it current.
+4. Mark pricing rules, margins, discount limits and internal weaknesses `approved_for: internal-only`.
+5. When sources disagree, keep the newest fact and tell the user about the conflict.
+6. Show the user the proposed entries, and write them after approval (or straight away if they asked you to).

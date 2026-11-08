@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Validate response.json before building deliverables.
 
-  check_response.py response.json [--library LIB] [--forbid NAME ...] [--report out.md]
+  check_response.py response.md [--library LIB] [--forbid NAME ...] [--mode questionnaire] [--report out.md]
 
 Exit code 0 = no critical issues, 1 = critical issues (mandatory gaps, unknown sources, forbidden names).
 """
@@ -25,6 +25,8 @@ def main():
     ap.add_argument("--library")
     ap.add_argument("--forbid", action="append", default=[], help="name that must not appear (other clients, competitors)")
     ap.add_argument("--report", help="also write the report to this markdown file")
+    ap.add_argument("--mode", choices=["proposal", "questionnaire"], default="proposal",
+                    help="questionnaire: no narrative sections expected")
     a = ap.parse_args()
 
     data = load_response(a.response)
@@ -93,7 +95,7 @@ def main():
         hits = len(re.findall(r"\b" + re.escape(w) + r"\b", all_text, re.IGNORECASE))
         if hits:
             warn.append("Filler phrase '{}' used {}x - replace with specifics".format(w, hits))
-    if not data["sections"]:
+    if not data["sections"] and a.mode == "proposal":
         warn.append("No narrative sections (executive summary etc.)")
 
     by = Counter(r.get("status") for r in reqs)

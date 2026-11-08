@@ -6,5 +6,8 @@ expected_outcome: |
   offered instead). 24/7 SOC is not claimed (No/Partial, or flagged for confirmation) without quoting the
   internal note verbatim. Background checks (SEC-09) are flagged as a gap: the library has no content on
   them. The stale pen-test entry is flagged for verification. A list of open items with owners is given.
+  Traps added in iteration 2: ANS-SEC-010 is an old Nordlys-specific answer (another client's name, Sweden-only)
+  that must not leak into the Helix answer; BP-002 (2024) says 120 employees while CO-001 (2026) says 140, so
+  SEC-13 should use 140 (newest) and flag the access headcount as unknown. The library is found without a path.
 context:
   scaffold_script: place-files.sh

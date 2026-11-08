@@ -71,3 +71,11 @@ owner: Security lead
 approved_for: internal-only
 
 Internal: we do not run a 24/7 SOC. Alerting is monitored during business hours (08-17 CET) with on-call for P1 alerts only on contracts that pay for on-call. Do not claim 24/7 monitoring; offer on-call or a partner SOC as an option, priced separately.
+
+## ANS-SEC-010: Data location (from 2024 Nordlys proposal)
+tags: data location, hosting, countries, residency, sweden, norway
+last_reviewed: 2024-03-12
+owner: Security lead
+approved_for: external
+
+For Nordlys Insurance all data is hosted in AWS Stockholm (Sweden) and never leaves the Nordics. Nordlys's claims data is backed up to a second AWS region in Ireland.

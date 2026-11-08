@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Write answers from response.json into the client's own questionnaire spreadsheet.
+"""Write answers from response.md into the client's own questionnaire spreadsheet.
 
-  fill_questionnaire.py client.xlsx response.json -o filled.xlsx \
+  fill_questionnaire.py client.xlsx response.md -o filled.xlsx \
       --sheet "Questions" --id-col A --answer-col D [--compliance-col C] [--first-row 2]
 
 Rows are matched by requirement id (the value in --id-col). Ids of the form R<n> match row n
@@ -22,7 +22,7 @@ try:
     from openpyxl.styles import Alignment, PatternFill
     from openpyxl.utils import column_index_from_string
 except ImportError:
-    sys.exit("openpyxl is required: pip install openpyxl")
+    sys.exit("openpyxl is required: python3 -m pip install openpyxl")
 
 YELLOW = PatternFill("solid", fgColor="FFEB9C")
 COMPLIANCE_WORD = {"comply": "Yes", "partial": "Partial", "exception": "No", "n/a": "N/A"}
@@ -81,7 +81,7 @@ def main():
     wb.save(a.out)
     print("Wrote {}: {} rows filled, {} flagged for review".format(a.out, filled, flagged))
     if missing:
-        print("Rows with ids not in response.json ({}): {}".format(len(missing), ", ".join(missing[:20])))
+        print("Rows with ids not in response.md ({}): {}".format(len(missing), ", ".join(missing[:20])))
 
 
 if __name__ == "__main__":

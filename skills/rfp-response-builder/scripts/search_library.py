@@ -4,6 +4,7 @@
   search_library.py --library LIB --query "data encryption at rest" [--top 5]
   search_library.py --library LIB --id ANS-SEC-004        # print one entry in full
   search_library.py --library LIB --list                  # list all entry IDs and titles
+  search_library.py --library LIB --next-id ANS-SEC       # next free ID in a prefix series (for new entries)
 """
 import argparse
 import math
@@ -42,10 +43,16 @@ def main():
     ap.add_argument("--query")
     ap.add_argument("--id")
     ap.add_argument("--list", action="store_true")
+    ap.add_argument("--next-id", metavar="PREFIX")
     ap.add_argument("--top", type=int, default=5)
     a = ap.parse_args()
 
     lib = parse_library(a.library)
+    if a.next_id:
+        pre = a.next_id.rstrip("-") + "-"
+        nums = [int(m.group(1)) for i in lib for m in [re.match(re.escape(pre) + r"(\d+)$", i)] if m]
+        print("{}{:03d}".format(pre, max(nums) + 1 if nums else 1))
+        return 0
     if not lib:
         print("Library at '{}' is empty or missing. Draft with [VERIFY] markers.".format(a.library))
         return 1

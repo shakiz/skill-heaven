@@ -1,8 +1,9 @@
 # Eval run outputs (regenerated per iteration)
 *-workspace/
 
-# Generated proposals
+# Generated outputs from running the skills
 rfp-output/
+contract-reviews/
 
 __pycache__/
 *.pyc
@@ -14,9 +15,9 @@ dist/
 *.zip
 __MACOSX/
 
-# Promo video build
-marketplace/video/node_modules/
-marketplace/video/out/
+# Promo video builds
+node_modules/
+marketplace/**/out/
 *.mp4
 *.wav
 *.mp3

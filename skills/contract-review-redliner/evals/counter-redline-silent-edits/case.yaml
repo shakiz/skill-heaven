@@ -1,0 +1,12 @@
+schema_version: "1.1"
+name: counter-redline-silent-edits
+expected_outcome: |
+  A change report identifies: (1) a tracked change by Cloudbridge Legal turning our 60-day renewal 
+  notice into 90 days; (2) UNTRACKED edits: our Customer liability cap was removed and the clause put 
+  back to 'unlimited' without tracking; the Supplier cap silently cut from three months to one month; 
+  governing law silently changed from England and Wales to New York; (3) Cloudbridge's comment 
+  refusing a mutual cap. It accepts that the AI-training change was accepted. It recommends pushing 
+  back especially on the silent edits and the liability point, and treats untracked changes as a 
+  serious trust/process issue.
+context:
+  scaffold_script: place-files.sh

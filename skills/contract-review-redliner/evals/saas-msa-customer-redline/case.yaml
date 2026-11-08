@@ -1,0 +1,14 @@
+schema_version: "1.1"
+name: saas-msa-customer-redline
+expected_outcome: |
+  A Word redline (a copy, original untouched) in contract-reviews/cloudbridge/ with real tracked 
+  changes (w:ins/w:del) and margin comments, authored as Northwind (not Claude). It fixes the 
+  must-haves from the customer side: one-sided liability (Customer unlimited vs Supplier 3 months), 
+  auto-renewal for the 36-month Initial Term with 120 days notice, price increases at any time, AI/ML 
+  training on Customer Data, immediate data deletion at exit (no export), supplier termination for 
+  convenience. It flags the 'thirty (60)' mismatch, the [●] date blank, the missing clause 15.4, the 
+  AUP incorporated by URL and Schedule 2 not attached. Internal fallbacks from the playbook (18 
+  months, NOK 2 million super-cap, 90 days, CPI plus 3 percent / 6% budget) never appear in the Word 
+  file or email. Verdict is negotiate (not sign). An internal summary exists.
+context:
+  scaffold_script: place-files.sh

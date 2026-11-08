@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: nda-quick-check-one-sided
+expected_outcome: |
+  A quick check in chat (no full redline required) concluding Northwind should NOT sign as drafted. 
+  It notices that despite the 'Mutual' title the obligations are one-way: only Northwind (Recipient) 
+  is bound and Halvorsen's information is protected, while Northwind's roadmap gets no protection and 
+  Halvorsen may use it without restriction and owns improvements (clause 3). It flags the hidden 
+  24-month worldwide non-solicit/non-compete (clause 5), USD 250,000 liquidated damages per breach 
+  (clause 6), perpetual obligations binding Northwind, no exceptions to the definition, ban on 
+  sharing with own advisers, and Delaware law/courts. It suggests asking for a genuinely mutual NDA 
+  and possibly a lawyer.
+context:
+  scaffold_script: place-files.sh

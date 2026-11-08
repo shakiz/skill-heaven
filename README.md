@@ -7,6 +7,7 @@ Claude Skills for marketing, business and HR teams. Each skill packages company 
 | Skill | What it does | Status |
 |---|---|---|
 | [`rfp-response-builder`](skills/rfp-response-builder/) | Turns RFPs, tenders and security questionnaires into tailored proposals from an approved answer library. Outputs a Word proposal, an Excel compliance matrix and a gap list. Also runs bid/no-bid checks. | Iteration 1 tested |
+| [`contract-review-redliner`](skills/contract-review-redliner/) | Reviews contracts against your negotiating playbook and writes a Word redline with real tracked changes and comments, an internal risk summary and a negotiation email. Catches untracked edits in counter-redlines. Sold as RedlineReady. | Iteration 1 tested |
 
 ## Research
 

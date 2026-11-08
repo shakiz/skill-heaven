@@ -1,0 +1,12 @@
+schema_version: "1.1"
+name: freelance-pdf-contractor-redline
+expected_outcome: |
+  A Word redline (.docx, rebuilt from the PDF) with tracked changes and comments from the 
+  contractor's side: deemed acceptance and payment within ~30 days (not 90 days after discretionary 
+  acceptance), limited revisions instead of unlimited, keep pre-existing IP / tools (licence only) 
+  and IP transfer on payment, remove or narrow the 24-month worldwide retail non-compete, payment for 
+  work done / kill fee on client termination, cap the uncapped indemnity, portfolio rights. Positions 
+  are from the vendor/contractor side, not the client's. It tells the user the redline was rebuilt 
+  from PDF so original layout is lost.
+context:
+  scaffold_script: place-files.sh

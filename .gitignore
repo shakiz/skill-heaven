@@ -1,0 +1,10 @@
+# Eval run outputs (regenerated per iteration)
+*-workspace/
+
+# Generated proposals
+rfp-output/
+
+__pycache__/
+*.pyc
+.DS_Store
+.venv/

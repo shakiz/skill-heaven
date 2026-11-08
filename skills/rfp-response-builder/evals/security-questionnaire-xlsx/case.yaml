@@ -1,0 +1,10 @@
+schema_version: "1.1"
+name: security-questionnaire-xlsx
+expected_outcome: |
+  The client's own spreadsheet is filled in (sheet and column layout preserved), saved in rfp-output/helix/.
+  Column D holds Yes/No/Partial and column E the answer for all 12 rows. SOC 2 is answered No (ISO 27001
+  offered instead). 24/7 SOC is not claimed (No/Partial, or flagged for confirmation) without quoting the
+  internal note verbatim. Background checks (SEC-09) are flagged as a gap: the library has no content on
+  them. The stale pen-test entry is flagged for verification. A list of open items with owners is given.
+context:
+  scaffold_script: place-files.sh

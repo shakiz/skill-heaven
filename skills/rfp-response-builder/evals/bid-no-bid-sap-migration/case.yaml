@@ -1,0 +1,9 @@
+schema_version: "1.1"
+name: bid-no-bid-sap-migration
+expected_outcome: |
+  A bid assessment in rfp-output/nordenergi/ recommending no-bid. It identifies the knock-outs with
+  evidence: turnover EUR 14.2M vs EUR 50M required (CO-003); no SAP Gold partnership or S/4HANA utility
+  references in the library; 140 staff with no SAP consultants vs 25 required. ISO 27001 is met. It does
+  not draft a full proposal, and may suggest alternatives (decline, or partner/subcontract).
+context:
+  scaffold_script: place-files.sh

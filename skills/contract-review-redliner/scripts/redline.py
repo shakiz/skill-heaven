@@ -17,8 +17,10 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _common import (VALID_ACTIONS, CLAUSE_START_RE, Numbering, Para, _CHARMAP, contract_paragraphs,  # noqa: E402
-                     has_auto_number, iter_paragraphs, locate, parse_review, slug_initials, utc_now)
+from _common import (VALID_ACTIONS, CLAUSE_START_RE, Numbering, Para, _CHARMAP, clean_metadata,  # noqa: E402
+                     contract_paragraphs, doc_metadata, existing_comments, has_auto_number, hidden_text,
+                     iter_paragraphs, locate, parse_review, remove_comments, remove_hidden_text, slug_initials,
+                     utc_now)
 
 try:
     from docx import Document
@@ -397,6 +399,13 @@ def main():
     ap.add_argument("--author")
     ap.add_argument("--no-track", action="store_true", help="do not switch on Track Changes in the output")
     ap.add_argument("--strict", action="store_true", help="do not write the file if any issue fails")
+    ap.add_argument("--remove-comments-by", nargs="+", default=[], metavar="AUTHOR",
+                    help="remove existing comments by these authors (e.g. colleagues' internal notes)")
+    ap.add_argument("--remove-all-comments", action="store_true", help="remove every comment already in the file")
+    ap.add_argument("--keep-metadata", action="store_true",
+                    help="keep document properties as they are (default: author set to --author; comments, "
+                         "keywords, subject and category cleared)")
+    ap.add_argument("--remove-hidden-text", action="store_true", help="delete text formatted as hidden")
     a = ap.parse_args()
 
     rv = parse_review(a.review)
@@ -417,6 +426,32 @@ def main():
     author = a.author or c.get("author") or c.get("our_party") or "Reviewer"
 
     doc, note = load_source(srcp)
+    hygiene = []
+    old_comments = existing_comments(doc)
+    if old_comments:
+        drop = [c["id"] for c in old_comments if a.remove_all_comments or c["author"] in a.remove_comments_by]
+        n = remove_comments(doc, drop)
+        if n:
+            hygiene.append("removed {} existing comment(s)".format(n))
+        kept = [c for c in old_comments if c["id"] not in drop]
+        for c in kept:
+            hygiene.append("WARNING: kept existing comment by {}: \"{}\" (it will be sent; remove with "
+                           "--remove-comments-by if internal)".format(c["author"] or "?", c["text"][:90]))
+    meta = doc_metadata(doc)
+    if not a.keep_metadata:
+        clean_metadata(doc, author)
+        dropped = {k: v for k, v in meta.items() if k in ("comments", "keywords", "subject", "category", "content_status")
+                   or (k in ("author", "last_modified_by") and v != author)}
+        if dropped:
+            hygiene.append("document properties cleaned: " + "; ".join("{}={!r}".format(k, str(v)[:60])
+                                                                      for k, v in dropped.items()))
+    hid = hidden_text(doc)
+    if hid:
+        if a.remove_hidden_text:
+            hygiene.append("removed {} hidden-text run(s)".format(remove_hidden_text(doc)))
+        else:
+            hygiene.append("WARNING: hidden text in the file will be sent: \"{}\" (use --remove-hidden-text)".format(
+                " ".join(hid)[:120]))
     ctx = Ctx(doc, author)
     paras = [Para(p, ctx.ours) for p in iter_paragraphs(doc)]
     texts = [pa.text for pa in paras]
@@ -479,6 +514,8 @@ def main():
         print("  {:<{w}}  {:<12}  {:<16} {}".format(iid, action, status, detail, w=w))
     if not results:
         print("  No issues in review.md.")
+    for h in hygiene:
+        print("  " + h)
     if failed and a.strict:
         sys.exit("{} issue(s) failed; nothing written (--strict).".format(len(failed)))
     if not a.no_track:

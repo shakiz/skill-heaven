@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: long-saas-promises-and-notice
+expected_outcome: |
+  A Word redline and an email for Vantora. The review ensures the sales promises (SSO included, 99.9% 
+  uptime, 15% discount from year 2) are written into the contract because the 
+  entire-agreement/non-reliance clause and the Services definition (which excludes SSO) would wipe 
+  them out. It fixes the order of precedence (Online Terms must not prevail), the Service Description 
+  amendable by Vantora, renewal price uplift to list price, the registered-post-only notice to Dublin 
+  (email invalid), the survival clause that omits confidentiality and data return, 'Provider' 
+  undefined (contract defines 'Vantora'), loss of data excluded, data location anywhere, 
+  sub-processors at discretion. Key date: Initial Term ends 14/15 January 2029, so the non-renewal 
+  notice must be RECEIVED by registered post by about 16 October 2028. The budget (NOK 400k) and the 
+  willingness to accept 90 days never appear in the redline or email.
+context:
+  scaffold_script: place-files.sh

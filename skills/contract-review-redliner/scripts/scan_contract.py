@@ -22,7 +22,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _common import Numbering, contract_paragraphs, iter_paragraphs  # noqa: E402
+from _common import (Numbering, contract_paragraphs, doc_metadata, existing_comments, hidden_text,  # noqa: E402
+                     iter_paragraphs)
 
 UNITS = {w: i for i, w in enumerate(
     "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen "
@@ -61,7 +62,11 @@ DEF_RE = re.compile(r"[“\"]([A-Z][\w&'’-]*(?:\s+(?:of|and|the|[A-Z][\w&'’-
 DOCREF_RE = re.compile(r"\b(Schedule|Exhibit|Annex|Appendix|Attachment|Order Form|Statement of Work|SOW|"
                        r"SCHEDULE|EXHIBIT|ANNEX|APPENDIX)\b(?:\s+([A-Z0-9]{1,3})\b)?")
 SIGNATURE_RE = re.compile(r"\b(signed|signature|by:|name:|title:|for and on behalf)", re.IGNORECASE)
-URL_RE = re.compile(r"\b(?:[a-z]{4,5}:/{2}|www\.)\S+|\b[\w-]+\.(?:com|io|net|org|co|ai|app)(?:/\S*)?", re.IGNORECASE)
+URL_RE = re.compile(r"\b(?:[a-z]{4,5}:/{2}|www\.)\S+|\b[\w-]+\.(?:com|io|net|org|co|ai|app)(?:/\S*)?|"
+                    r"\b[\w-]+\.[a-z]{2,10}/[\w/.-]+", re.IGNORECASE)
+SUBJECT_RE = re.compile(r"\b([A-Z][a-z]{2,})(?:\u2019s|'s|\s+(?:shall|may|must|will|agrees|warrants))\b")
+NOT_TERMS = set("""This That These Those Each Either Neither Any All No Nothing Such Neither Notices Notice Payment
+Termination Liability Clause Section Schedule Fees Agreement Party Parties It We You They He She""".split())
 ONLINE_RE = re.compile(r"\b(?:as (?:amended|updated|modified) (?:by \w+ )?from time to time|available at|posted (?:at|on)|"
                        r"incorporated (?:herein )?by reference)\b", re.IGNORECASE)
 DATE_CUES = re.compile(r"\b(renew\w*|auto-?renew\w*|notice period|days'? (?:prior )?(?:written )?notice|"
@@ -141,6 +146,11 @@ def scan(paras):
                 for k in range(1, len(parts)):
                     labels.add(".".join(parts[:k]))
     full = "\n".join(p["text"] for p in paras)
+    headings_by_label = {}
+    for p in paras:
+        lab = (p["label"] or typed_label(p["text"])).strip().rstrip(".)").lstrip("(")
+        if lab and "." not in lab and len(p["text"]) < 80:
+            headings_by_label.setdefault(lab, re.sub(r"^\s*\d+[.)]?\s*", "", p["text"]).strip())
 
     for i, p in enumerate(paras, 1):
         t = p["text"]
@@ -164,6 +174,16 @@ def scan(paras):
                 if ref not in labels:
                     findings.append(("xref", i, "refers to {} {} which was not found in this document".format(
                         m.group(0).split()[0].lower(), ref)))
+        if headings_by_label and re.search(r"\b(?:clauses?|sections?|articles?)\b", t, re.IGNORECASE):
+            for m in re.finditer(r"\b(\d{1,3})\s*\(([A-Z][A-Za-z ,&'-]{2,40})\)", t):
+                ref, title = m.group(1), m.group(2)
+                if ref not in headings_by_label:
+                    continue
+                want = {w.lower().rstrip("s") for w in re.findall(r"[A-Za-z]{4,}", title)}
+                have = {w.lower().rstrip("s") for w in re.findall(r"[A-Za-z]{4,}", headings_by_label[ref])}
+                if want and not want & have:
+                    findings.append(("xref", i, "refers to clause {} \"{}\", but clause {} is \"{}\"".format(
+                        ref, title, ref, headings_by_label[ref])))
         for m in URL_RE.finditer(t):
             findings.append(("external-doc", i, "refers to online terms or a link: {!r} (not reviewed; ask for a copy)"
                              .format(m.group(0).rstrip(".,;)"))))
@@ -189,6 +209,18 @@ def scan(paras):
         if len(set(where)) > 1:
             findings.append(("definition", where[0], "\"{}\" is defined more than once (paras {})".format(
                 term, ", ".join(map(str, sorted(set(where)))))))
+
+    # party / defined-term drift: a capitalised subject that is never defined ("Provider shall" when the
+    # contract defines "Vantora")
+    defined_words = {w for t in defs for w in t.split()}
+    for i, p in enumerate(paras, 1):
+        for m in SUBJECT_RE.finditer(p["text"]):
+            w = m.group(1)
+            if w in NOT_TERMS or w in defined_words:
+                continue
+            if len(re.findall(r"\b" + w + r"\b", full)) <= 3:
+                findings.append(("definition", i, "\"{}\" is used as a party or term but never defined "
+                                                  "(defined: {})".format(w, ", ".join(sorted(defs)[:8]))))
 
     # referenced documents present?
     headings = " ".join(p["text"] for p in paras if p["heading"] or len(p["text"]) < 80).lower()
@@ -236,7 +268,22 @@ def main():
         lines.append("para {} {}{}".format(i, lab, x["text"]))
     lines += ["", "# SCAN ({} paragraphs, {} words{})".format(
         len(paras), words, ", converted from " + ext if ext != ".docx" else "")]
-    if revs or n_comments:
+    if ext == ".docx":
+        from docx import Document
+        d = Document(str(p))
+        cms = existing_comments(d)
+        if cms:
+            lines.append("## comments already in the file ({}): check none are internal before anything is sent"
+                         .format(len(cms)))
+            lines += ["- {}: \"{}\"".format(c["author"] or "?", c["text"][:160]) for c in cms]
+        md = doc_metadata(d)
+        if md:
+            lines.append("## document properties (travel with the file): " +
+                         "; ".join("{}={!r}".format(k, str(v)[:80]) for k, v in md.items()))
+        hid = hidden_text(d)
+        if hid:
+            lines.append("## HIDDEN TEXT (invisible on screen, sent with the file): \"{}\"".format(" ".join(hid)[:300]))
+    if revs:
         lines.append("- tracked changes already in this file: {} ({}); comments: {}. "
                      "This is a marked-up draft: use compare_versions.py --changes.".format(
                          revs, ", ".join("{}: {}".format(k, v) for k, v in authors.items()) or "-", n_comments))

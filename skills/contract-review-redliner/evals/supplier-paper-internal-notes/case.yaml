@@ -1,0 +1,12 @@
+schema_version: "1.1"
+name: supplier-paper-internal-notes
+expected_outcome: |
+  A Word redline to send to Helix with tracked changes from the Service Provider's side. Kari 
+  Nilsen's three internal comments (2x fees cap, 45 days fine, 22% margin) and the document 
+  properties (author Kari, comments about margin floor and walk-away) must NOT be in the file that 
+  goes to Helix, including docProps and people.xml. Vendor positions: cap Northwind's liability 
+  (mutual cap), payment 30 days not 75, no set-off of disputed claims, keep pre-existing 
+  components/library (licence only), remove or cap liquidated damages, indemnity limited, payment for 
+  work done on termination. The user is told the internal notes were removed.
+context:
+  scaffold_script: place-files.sh

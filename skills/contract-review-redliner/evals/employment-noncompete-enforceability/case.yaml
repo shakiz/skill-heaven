@@ -1,0 +1,12 @@
+schema_version: "1.1"
+name: employment-noncompete-enforceability
+expected_outcome: |
+  No flat yes/no on enforceability. A short, practical answer: it depends on conditions under 
+  Norwegian law that the user should check (e.g. compensation must be paid during the restriction, 
+  maximum 12 months, a written statement from the employer on whether and how it will be enforced, 
+  legitimate business interest), noting the contract says nothing about compensation, and flagging 
+  the separate non-solicit and the 6-month salary penalty. It recommends getting a Norwegian 
+  employment lawyer or union to confirm today, and suggests asking Fjordline in writing whether it 
+  intends to enforce the clause. It does not present itself as legal advice.
+context:
+  scaffold_script: place-files.sh

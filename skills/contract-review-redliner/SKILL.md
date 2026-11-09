@@ -76,7 +76,9 @@ This gives the text with paragraph and clause numbers, reconstructed from Word a
 - documents referenced but not attached (schedules, URLs, "as updated from time to time")
 - renewal and notice language
 
-Raise every blank and mismatch, and list everything not provided under `# Not reviewed`; you can't review what you can't see. If the scan says the file already contains tracked changes, it's a marked-up draft: use **Counter-redline** mode.
+Raise every blank and mismatch, and list everything not provided under `# Not reviewed`; you can't review what you can't see.
+
+The scan also shows what the file carries besides its text: **comments already in it, document properties and hidden text.** A file that went round colleagues often holds internal notes ("we can go to 2x fees"). Any comment by someone on the user's side is internal by default, and must be removed from the redline (step 5). The counterparty's own comments can stay. If the scan says the file already contains tracked changes, it's a marked-up draft: use **Counter-redline** mode.
 
 ### 2. Fill in `# Contract` and the checklist
 
@@ -118,6 +120,8 @@ python3 <skill-dir>/scripts/redline.py contract-reviews/<slug>/review.md -o cont
 python3 <skill-dir>/scripts/build_summary.py contract-reviews/<slug>/review.md -o contract-reviews/<slug>/review-summary.docx
 ```
 
+Add `--remove-comments-by "<colleague>" ...` for every internal commenter the scan listed (or `--remove-all-comments`), and `--remove-hidden-text` if the scan found hidden text. Document properties (author, comments, keywords) are cleaned automatically. Read the hygiene lines in the output: a `WARNING: kept existing comment` must be one you meant to keep.
+
 `redline.py` writes real tracked changes (author = `author:` from `# Contract`) and margin comments into a **copy** of the contract, and leaves Track Changes switched on. It reports each issue as one of:
 - `applied`
 - `comment-fallback`: the text crosses a hyperlink, field or earlier revision, so the proposed wording went into a comment instead. Tell the user.
@@ -132,6 +136,7 @@ Tell the user, briefly:
 - the top 3 issues in plain English, with what you asked for;
 - the key dates, especially notice deadlines;
 - what you didn't review (missing schedules, linked terms) and any lawyer flags;
+- what you removed from the file before it goes out (internal comments, properties, hidden text);
 - where the files are. The redline is ready to send, while the summary is internal and includes their fallbacks.
 
 ## Quick check

@@ -32,7 +32,7 @@ Each clause gets a high, medium or low risk rating, a plain-English explanation 
 This is the headline. You get a genuine .docx with real tracked changes and margin comments, ready to send to the other side. Redlines are surgical: only the words that change are struck or inserted. It works on the original .docx and keeps its formatting and auto-numbering. Track Changes is left switched on, so the conversation continues in Word. PDFs and text files are rebuilt as a plain Word document.
 
 **🔒 Keeps your internal positions internal.**
-Your fallbacks, walk-away points and internal reasoning go into an internal summary only. The Word file contains only counterparty-facing comments, and a validation script checks for leaks before anything is built.
+Your fallbacks, walk-away points and internal reasoning go into an internal summary only. The Word file contains only counterparty-facing comments, and a validation script checks for leaks before anything is built. It also cleans the file itself: colleagues' internal comments left in the draft, hidden text, and document properties like author and notes are found and stripped before the redline goes out.
 
 **🧐 Catches the mistakes that slip through.**
 The validation step also flags:

@@ -611,3 +611,112 @@ def utc_now():
 def slug_initials(name):
     parts = re.findall(r"[A-Za-z0-9]+", name or "")
     return "".join(p[0] for p in parts[:3]).upper() or "R"
+
+
+# --------------------------------------------------------------------------- what else a .docx carries
+# Files sent to a counterparty carry more than the visible text: earlier comments (often internal notes from
+# colleagues), document properties (author, comments, keywords) and hidden text. These helpers find and remove them.
+
+META_FIELDS = ("author", "last_modified_by", "title", "subject", "comments", "keywords", "category", "content_status")
+
+
+def existing_comments(doc):
+    out = []
+    for part in doc.part.package.iter_parts():
+        if str(part.partname).endswith("/comments.xml") and hasattr(part, "element"):
+            for c in part.element.findall(_qn("w:comment")):
+                out.append({"id": c.get(_qn("w:id")), "author": c.get(_qn("w:author")) or "",
+                            "text": " ".join("".join(t.text or "" for t in p.iter(_qn("w:t")))
+                                             for p in c.iter(_qn("w:p"))).strip()})
+    return out
+
+
+def doc_metadata(doc):
+    cp = doc.core_properties
+    return {f: getattr(cp, f) for f in META_FIELDS if getattr(cp, f, None)}
+
+
+def hidden_text(doc):
+    """Text in runs formatted as hidden (w:vanish): invisible on screen, but sent with the file."""
+    out = []
+    for r in doc.element.body.iter(_qn("w:r")):
+        rpr = r.find(_qn("w:rPr"))
+        if rpr is not None and rpr.find(_qn("w:vanish")) is not None:
+            v = rpr.find(_qn("w:vanish")).get(_qn("w:val"))
+            if v in (None, "1", "true", "on"):
+                t = "".join(x.text or "" for x in r.iter(_qn("w:t")))
+                if t.strip():
+                    out.append(t)
+    return out
+
+
+def _attr_endswith(el, name):
+    return [v for k, v in el.attrib.items() if k.endswith("}" + name)]
+
+
+def remove_comments(doc, ids):
+    """Remove comments (by id) everywhere: anchors in the body, comments.xml and Word's companion parts."""
+    from lxml import etree
+    ids = {str(i) for i in ids}
+    if not ids:
+        return 0
+    body = doc.element.body
+    for el in list(body.iter(_qn("w:commentRangeStart"), _qn("w:commentRangeEnd"), _qn("w:commentReference"))):
+        if el.get(_qn("w:id")) in ids:
+            parent = el.getparent()
+            if el.tag == _qn("w:commentReference") and parent.tag == _qn("w:r") and \
+                    all(c.tag in (_qn("w:rPr"), _qn("w:commentReference")) for c in parent):
+                parent.getparent().remove(parent)
+            else:
+                parent.remove(el)
+    para_ids, removed_authors, n = set(), set(), 0
+    parts = list(doc.part.package.iter_parts())
+    for part in parts:
+        if str(part.partname).endswith("/comments.xml") and hasattr(part, "element"):
+            for c in list(part.element.findall(_qn("w:comment"))):
+                if c.get(_qn("w:id")) in ids:
+                    for p in c.iter(_qn("w:p")):
+                        para_ids.update(_attr_endswith(p, "paraId"))
+                    removed_authors.add(c.get(_qn("w:author")) or "")
+                    part.element.remove(c)
+                    n += 1
+    remaining = {c["author"] for c in existing_comments(doc)}
+    durable = set()
+    for suffix in ("commentsIds.xml", "commentsExtended.xml", "commentsExtensible.xml", "people.xml"):
+        for part in parts:
+            if not str(part.partname).endswith("/" + suffix):
+                continue
+            is_xml = hasattr(part, "element")
+            root = part.element if is_xml else etree.fromstring(part.blob)
+            for child in list(root):
+                pid = set(_attr_endswith(child, "paraId"))
+                did = set(_attr_endswith(child, "durableId"))
+                auth = set(_attr_endswith(child, "author"))
+                if suffix == "commentsIds.xml" and pid & para_ids:
+                    durable |= did
+                drop = (pid & para_ids) or (did & durable) or \
+                       (suffix == "people.xml" and auth & (removed_authors - remaining))
+                if drop:
+                    root.remove(child)
+            if not is_xml:
+                part._blob = etree.tostring(root, xml_declaration=True, encoding="UTF-8", standalone=True)
+    return n
+
+
+def clean_metadata(doc, author):
+    cp = doc.core_properties
+    cp.author = author
+    cp.last_modified_by = author
+    for f in ("comments", "keywords", "subject", "category", "content_status"):
+        setattr(cp, f, "")
+
+
+def remove_hidden_text(doc):
+    n = 0
+    for r in list(doc.element.body.iter(_qn("w:r"))):
+        rpr = r.find(_qn("w:rPr"))
+        if rpr is not None and rpr.find(_qn("w:vanish")) is not None and \
+                rpr.find(_qn("w:vanish")).get(_qn("w:val")) in (None, "1", "true", "on"):
+            r.getparent().remove(r)
+            n += 1
+    return n

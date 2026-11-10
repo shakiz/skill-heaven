@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: carryover-from-yesterday-plan
+context:
+  scaffold_script: place-files.sh
+expected_outcome: |
+  Yesterday shows progress on PAY-150 currency rounding (not shipped; no PR). Today carries over finishing PAY-150 / opening the PR and the PAY-155 runbook from the previous plan, which had no activity. PAY-142 from the old Yesterday is not repeated. Blockers is None. Skipped sources are mentioned briefly.

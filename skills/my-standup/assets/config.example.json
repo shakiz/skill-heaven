@@ -1,0 +1,16 @@
+{
+  "repo_roots": ["~/code/payments", "~/code/web"],
+  "git_authors": ["dana@acme.com", "12345+dana@users.noreply.github.com"],
+  "github": true,
+  "tracker": "jira",
+  "jira_base_url": "https://acme.atlassian.net",
+  "jira_jql_extra": "project in (PAY, WEB)",
+  "calendar": true,
+  "slack_channel": "#payments-standup",
+  "slack_search": true,
+  "workdays": "mon,tue,wed,thu,fri",
+  "link_style": "slack",
+  "sections": ["Yesterday", "Today", "Blockers"],
+  "max_bullets": 5,
+  "tone": "terse"
+}

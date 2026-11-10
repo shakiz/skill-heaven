@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: messy-notes-for-teams
+expected_outcome: |
+  A Teams-ready update in markdown link style using https://acme.atlassian.net/browse/ links for CHK-88, CHK-91 and CHK-95. Yesterday: fixed and merged CHK-88 flaky test, paired with Lena on CHK-91 (postcode validation done), reviewed 3 PRs; the routine 1:1 and standup are left out. Today: CHK-91 country rules, then CHK-95 if time. Blockers: None. No invented details.

@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: git-repos-and-notes-to-slack
+context:
+  scaffold_script: place-files.sh
+expected_outcome: |
+  A Slack-paste-ready Yesterday/Today/Blockers update. Yesterday has one merged-together PAY-142 refund retry item (no commit-message noise, no merge or WIP lines) and the WEB-77 price range filter; nothing from Sam or from 12 days ago. Today leads with finishing WEB-77. Blockers names Priya and design sign-off. Links are paste-safe Jira URLs on acme.atlassian.net; no invented PR links. Nothing is posted.

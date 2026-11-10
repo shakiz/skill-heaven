@@ -12,5 +12,6 @@
   "link_style": "slack",
   "sections": ["Yesterday", "Today", "Blockers"],
   "max_bullets": 5,
-  "tone": "terse"
+  "tone": "terse",
+  "save_to": {"type": "google_doc", "url": "https://docs.google.com/document/d/EXAMPLE/edit", "title": "Standup log – Dana"}
 }

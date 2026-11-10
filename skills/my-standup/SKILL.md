@@ -1,6 +1,6 @@
 ---
 name: my-standup
-description: Writes the user's daily standup update (yesterday / today / blockers) from their real activity, so they don't have to reconstruct it from memory. Pulls their own git commits and GitHub PRs, Jira or Linear tickets, calendar meetings, Slack threads and any rough notes they type, merges everything about the same ticket into one line, and returns a short Slack-ready update with ticket and PR links, then optionally posts it to their standup channel. Remembers yesterday's plan so unfinished items carry over. Use this skill whenever the user asks for their standup, daily update, daily status, scrum update, async check-in, "what did I do yesterday", "write my update for #standup", or pastes messy notes and wants them turned into a standup, even if they don't say the word "standup". Also use it for weekly/sprint status summaries of their own work.
+description: Writes the user's daily standup update (yesterday / today / blockers) from their real activity, so they don't have to reconstruct it from memory. Pulls their own git commits and GitHub PRs, Jira or Linear tickets, calendar meetings, Slack threads and any rough notes they type, merges everything about the same ticket into one line, and returns a short Slack-ready update with ticket and PR links, then optionally posts it to their standup channel and logs it to a Google Doc, Claude doc or existing doc of their choice. Remembers yesterday's plan so unfinished items carry over. Use this skill whenever the user asks for their standup, daily update, daily status, scrum update, async check-in, "what did I do yesterday", "write my update for #standup", or pastes messy notes and wants them turned into a standup, even if they don't say the word "standup". Also use it for weekly/sprint status summaries of their own work.
 ---
 
 # My Standup
@@ -35,8 +35,17 @@ Config fields (all optional; `assets/config.example.json` is the template):
 | `sections` | headings to use | `["Yesterday", "Today", "Blockers"]` |
 | `max_bullets` | per section | `5` |
 | `tone` | `terse`, `normal` or `detailed` | `terse` |
+| `save_to` | where approved standups are logged: `{"type": "google_doc" \| "claude_doc" \| "notion" \| "confluence" \| "local", "url": "...", "title": "..."}` | not set → ask once (see below) |
 
-**First-time setup**: ask at most one compact question round. Infer what you can first (git email, repos with recent commits under the working directory or `~/code`, `~/Projects`, `~/src`, which connectors are available) and ask only to confirm or fill gaps: repo folders, Jira project, Slack channel, workdays. Write the file, then continue to the standup.
+**First-time setup**: ask at most one compact question round. Infer what you can first (git email, repos with recent commits under the working directory or `~/code`, `~/Projects`, `~/src`, which connectors are available) and ask only to confirm or fill gaps: repo folders, Jira project, Slack channel, workdays, and where to save standups (below). Write the file, then continue to the standup.
+
+**Where to save standups (asked once, ever)**: if `save_to` is missing from the config, ask the user one question, as part of first-time setup, or at the first approval if setup was skipped: "Where should I keep your standups?" Offer only options that can actually work here:
+- **A new Google Doc**: if a Google Docs or Drive connector is available.
+- **A new Claude doc**: if a Claude Docs connector (or a docs skill) is available. The doc lives in their Claude account.
+- **An existing doc**: they paste a link (Google Doc, Claude doc/artifact, Notion page, Confluence page). Accept it only if a connector here can write to that kind of link; otherwise say so and offer the other options.
+- **Just this computer**: the local history files only.
+
+Store the answer in `save_to` straight away, and include the URL once a new doc is created, so the question is never asked again. Only ask again if the user asks to change it ("save my standups somewhere else"). The local history in `~/.my-standup/history/` is kept whatever they choose, because it's what the window and carry-over steps read.
 
 ### 2. Work out the time window
 
@@ -105,7 +114,12 @@ Show the draft in a code block so it's copy-pasteable, followed by at most two s
 - If `slack_channel` is set and a Slack connector is available, ask: "Post to #team-standup?" Post **only after the user says yes**, because a message in a team channel can't really be taken back. Post with Slack mrkdwn links (`<url|text>`).
 - Otherwise, the draft is the deliverable.
 
-When the user approves (posts, or says it's good, or edits it), save the final text to `~/.my-standup/history/YYYY-MM-DD.md`. If they edited it, save their version: that's what tomorrow's carry-over must compare against. Mention the save in a few words.
+When the user approves (posts, or says it's good, or edits it), save the final text. If they edited it, save their version: that's what tomorrow's carry-over must compare against.
+
+1. **Local history, always**: write `~/.my-standup/history/YYYY-MM-DD.md`.
+2. **The standup log doc**, per `save_to` (if `save_to` isn't set yet, ask the one-time question first). Read `references/saving.md` for how to create and update each kind of doc. In short: add a dated section (`## Tue 10 Nov 2026`) holding that day's standup, newest at the top, with links as normal markdown links (never Slack `<url|text>`). Running it twice on the same day replaces that day's section instead of adding a second one.
+
+If writing to the doc fails (connector down, access revoked), the local copy still stands. Say so in one line and offer to retry, but don't ask the where-to-save question again. Confirm the save in a few words, with the doc link: "Saved to your Standup log."
 
 ## Variations
 

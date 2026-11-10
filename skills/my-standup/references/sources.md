@@ -84,6 +84,8 @@ Summarise; don't quote. Never include DM content, or other people's words, in th
 
 Count carry-overs by looking back through the earlier files for the same item.
 
+If the local history is empty but `save_to` in the config points at a doc, read the newest section of that doc instead (see `references/saving.md`).
+
 ## Reading the user's notes
 
 Notes beat tools. If the user says "today: finish PAY-150, blocked on creds from Dana", that's the Today and Blockers sections, with the tool data filling in links and details. If a note contradicts the data ("PAY-142 isn't done, it got reverted"), follow the note.

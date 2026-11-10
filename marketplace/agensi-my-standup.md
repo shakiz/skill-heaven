@@ -45,6 +45,9 @@ A blocker shows up only when there's evidence: a blocked ticket, a PR waiting on
 **✅ You approve before anything is posted.**
 You see the draft every time. It posts to your standup channel only after you say yes.
 
+**📒 Keeps a standup log where you want it.**
+The first time, it asks once where to keep your standups: a new Google Doc, a new Claude doc, or a doc you already have (Google Docs, Claude, Notion, Confluence). Every approved standup is added as a dated section, newest first, ready for your 1:1s and performance reviews.
+
 ### Also does
 - A weekly or sprint summary (Shipped / In progress / Next week / Risks)
 - A 30-second spoken version for video standups
@@ -56,7 +59,7 @@ You see the draft every time. It posts to your standup channel only after you sa
 - **Remote teams** posting async updates in Slack or Teams
 
 ### Privacy
-Runs locally with your own logins. It summarises your work only: it never quotes DMs or other people's messages. History is plain text in `~/.my-standup/`.
+Runs locally with your own logins. It summarises your work only: it never quotes DMs or other people's messages. History is plain text in `~/.my-standup/`, plus the standup log doc you choose.
 
 ## Tags
 standup, daily update, scrum, agile, git, github, jira, linear, slack, teams, productivity, developer tools, open source
